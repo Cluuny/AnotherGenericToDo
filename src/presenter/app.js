@@ -1,10 +1,10 @@
 import IOHandler from "../view/IOHandler.js";
 import TasksWorker from "../model/TaskWorker.js";
-import "colors";
+import chalk from "chalk";
 class App {
-  constructor(ioHandler, tasksWorker) {
-    this.ioHandler = ioHandler;
-    this.tasksWorker = tasksWorker;
+  constructor() {
+    this.ioHandler = new IOHandler();
+    this.tasksWorker = new TasksWorker();
     this.mainMenuChoices = [
       {
         name: "1. Crear Tarea",
@@ -39,23 +39,17 @@ class App {
         value: 0,
       },
     ];
-    this.welcomeMessage =
-      "\n======================".green +
-      "\n" +
-      "       TODO APP       ".cyan +
-      "\n" +
-      "======================".green +
-      "\n";
+    this.welcomeMessage = "\n\tAnother Generic To-Do App\n"
   }
 
   init = async () => {
     let exitFlag = false;
     do {
-      this.ioHandler.writeLine(this.welcomeMessage);
+      this.ioHandler.writeLine(chalk.underline.magenta.bold(this.welcomeMessage));
       let option = await this.ioHandler.ask(
         {
           type: "list",
-          message: `${"Bienvenido... Selecciona una opción: ".yellow} \n`.yellow,
+          message: chalk.yellowBright.bold("Selecciona una opción: "),
           choices: this.mainMenuChoices,
         }
       );
@@ -63,13 +57,13 @@ class App {
         this.exit()
         exitFlag = true;
       } else {
-        await this.ioHandler.pause(`\nPresiona ${"ENTER".blue} para continuar...`);
+        await this.ioHandler.pause(chalk.bold(`\nPresiona ${chalk.bgBlueBright("ENTER")} para continuar...\n`));
         await this.runServices(option);
       }
     } while (!exitFlag);
   };
   exit = () => {
-    this.ioHandler.writeLine(`\n${"¡Hasta luego!".yellow + "\n"}`);
+    this.ioHandler.writeLine(chalk.yellowBright.bold("\n\tHasta luego!\n"));
     process.exit(0);
   }
   runServices = async (option) => {
@@ -81,16 +75,16 @@ class App {
         let wasCreated;
         let title = await this.ioHandler.ask({
           type: "input",
-          message: "Título de la tarea: "
+          message: chalk.bold("Título de la tarea: ")
         });
         let whitDueDate = await this.ioHandler.ask({
           type: "confirm",
-          message: "¿Deseas agregar una fecha de vencimiento?: "
+          message: chalk.bold("¿Deseas agregar una fecha de vencimiento?: ")
         })
         if (whitDueDate) {
           let dueDate = await this.ioHandler.ask({
             type: "date",
-            message: "Fecha de vencimiento: "
+            message: chalk.bold("Fecha de vencimiento: ")
           })
           wasCreated = await this.tasksWorker.createTask({
             title: title,
@@ -102,28 +96,28 @@ class App {
           });
         }
         wasCreated
-          ? this.ioHandler.writeLine("Tarea creada con exito".black.bgGreen)
-          : this.ioHandler.writeLine("No se pudo crear la tarea".black.bgRed);
+          ? this.ioHandler.writeLine(chalk.underline.greenBright("Tarea creada con exito"))
+          : this.ioHandler.writeLine(chalk.underline.redBright("No se pudo crear la tarea"));
         break;
       case 2:
         let tasks = await this.tasksWorker.listTasks();
-        this.ioHandler.writeLine("Todas las tareas: ".black.bgGreen + "\n");
+        this.ioHandler.writeLine(chalk.underline.greenBright("Todas las tareas:\n"));
         for (const task of tasks) {
-          this.ioHandler.writeLine(`${task.title}`.yellow + ` -> ${task.done ? "Completada".black.bgGreen : "Pendiente".black.bgRed}` + `:: ${task.dueDate ? task.dueDate : "Sin fecha de vencimiento"}`.cyan);
+          this.ioHandler.writeLine(`${chalk.white(task.title)} -> ${task.done ? chalk.greenBright("Completada") : chalk.redBright("Pendiente")} :: ${chalk.yellowBright(task.dueDate ? task.dueDate : "Sin fecha de vencimiento")}`);
         }
         break;
       case 3:
         let doneTasks = await this.tasksWorker.listTasks("done");
-        if (doneTasks.length === 0) this.ioHandler.writeLine("No hay tareas completadas".black.bgRed);
+        if (doneTasks.length === 0) this.ioHandler.writeLine(chalk.bgRedBright("No hay tareas completadas"));
         for (const task of doneTasks) {
-          this.ioHandler.writeLine(`${task.title}`.yellow + ` -> ` + `Completada el: ${task.completedOn}`.green);
+          this.ioHandler.writeLine(`${chalk.white(task.title)} -> ${chalk.greenBright("Completada el: ")} ${chalk.yellowBright(task.completedOn)}`);
         }
         break;
       case 4:
         let pendingTasks = await this.tasksWorker.listTasks("pending");
-        if (pendingTasks.length === 0) this.ioHandler.writeLine("No hay tareas pendientes".black.bgGreen);
+        if (pendingTasks.length === 0) this.ioHandler.writeLine(chalk.bgGreenBright("No hay tareas pendientes"));
         for (const task of pendingTasks) {
-          this.ioHandler.writeLine(`${task.title}` + ` -> ` + `Pendiente para el: ${task.dueDate ? task.dueDate : "Sin fecha de vencimiento"}`.red);
+          this.ioHandler.writeLine(`${chalk.white(task.title)} -> ${chalk.redBright("Pendiente para el: ")} ${chalk.yellowBright(task.dueDate)}`);
         }
         break;
       case 5:
@@ -131,28 +125,30 @@ class App {
         tasksArray = tasksArray.filter((task) => !task.done);
         tasksArray.forEach((task) => {
           taskTitlesArray.push({
-            name: `${task.title} -> ${task.dueDate ? task.dueDate : "Sin fecha de vencimiento"}`,
+            name: `${chalk.underline.yellowBright(task.title)} -> ${task.dueDate ? task.dueDate : "Sin fecha de vencimiento"}`,
             value: task.id,
           });
         });
         tasksIDs = await this.ioHandler.ask({ type: "checkbox", message: "Selecciona la(s) tarea(s) a completar: ", choices: taskTitlesArray });
         for (const ID of tasksIDs) {
           let wasCompleted = await this.tasksWorker.completeTask(ID);
-          this.ioHandler.writeLine(`${"Tarea: ".yellow + ID} -> ${wasCompleted ? "Completada".black.bgGreen : "No se pudo completar".black.bgRed}`)
+          let task = await this.tasksWorker.getTaskByID(ID);
+          this.ioHandler.writeLine(`${chalk.white(task.title)} -> ${wasCompleted ? chalk.greenBright("Completada") : chalk.redBright("No se pudo completar")}`)
         }
         break;
       case 6:
         tasksArray = await this.tasksWorker.loadTasks();
         tasksArray.forEach((task) => {
           taskTitlesArray.push({
-            name: `${task.title} -> ${task.dueDate ? task.dueDate : "Sin fecha de vencimiento"}`,
+            name: `${chalk.underline.yellowBright(task.title)} -> ${task.dueDate ? task.dueDate : "Sin fecha de vencimiento"}`,
             value: task.id,
           })
         })
         tasksIDs = await this.ioHandler.ask({ type: "checkbox", message: "Selecciona la(s) tarea(s) a borrar: ", choices: taskTitlesArray });
         for (const ID of tasksIDs) {
+          let task = await this.tasksWorker.getTaskByID(ID);
           let wasDeleted = await this.tasksWorker.deleteTask(ID);
-          this.ioHandler.writeLine(`${"Tarea: ".yellow + ID} -> ${wasDeleted ? "Borrada".black.bgRed : "No se pudo borrar".white.bgRed}`)
+          this.ioHandler.writeLine(`${chalk.white(task.title)} -> ${wasDeleted ? chalk.redBright("Eliminada") : chalk.underline.redBright("No se pudo eliminar")}`)
         }
         break;
       case 7:
@@ -162,5 +158,5 @@ class App {
     }
   };
 }
-let app = new App(new IOHandler(), new TasksWorker());
+let app = new App();
 app.init();

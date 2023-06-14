@@ -17,7 +17,6 @@ class IOHandler {
     let option = await inquirer.prompt(question);
     return option.response;
   };
-
   writeLine = (prompt) => {
     console.log(prompt);
   };

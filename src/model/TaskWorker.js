@@ -1,6 +1,5 @@
 import JsonWorker from "./JsonWorker.js";
 import crytpo from "crypto";
-import "colors";
 let jsonWorker = new JsonWorker();
 
 class TasksWorker {
@@ -66,6 +65,17 @@ class TasksWorker {
       }
     }
     return found;
+  }
+  getTaskByID = async (taskID) => {
+    let tasksArray = await jsonWorker.loadTasks();
+    let foundTask;
+    for (const task of tasksArray) {
+      if (task.id === taskID) {
+        foundTask = task;
+        break;
+      }
+    }
+    return foundTask;
   }
 }
 

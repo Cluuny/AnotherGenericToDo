@@ -1,1 +1,31 @@
-[{"title":"Pasar notas a Notion","dueDate":"13/6/2023","done":false,"id":"d7830d4ed15bdc589c9825b607a92aa036dbc15cdc605bdf4c32e8863f096442","createdOn":"13/6/2023, 8:49:16 p. m."}]
+[
+    {
+        "title": "Pasar notas a Notion",
+        "dueDate": "13/6/2023",
+        "done": false,
+        "id": "d7830d4ed15bdc589c9825b607a92aa036dbc15cdc605bdf4c32e8863f096442",
+        "createdOn": "13/6/2023, 8:49:16 p. m."
+    },
+    {
+        "title": "Migrar de Colors a Chalk",
+        "dueDate": "14/6/2023",
+        "done": true,
+        "id": "3a93ae2f5eee85c5bb6f60cb35f4d4e268562fe621842ed4d3df15434609c057",
+        "createdOn": "14/6/2023, 2:52:57 p. m.",
+        "completedOn": "14/6/2023, 4:32:51 p. m."
+    },
+    {
+        "title": "Implementar inquirer-press-to-cotinue",
+        "dueDate": "15/6/2023",
+        "done": false,
+        "id": "efdee8c30e7ce9f7107ca8b326bc24040cca672c0b58ea1595c331292a4a293f",
+        "createdOn": "14/6/2023, 3:53:40 p. m."
+    },
+    {
+        "title": "Trabajar en el README",
+        "dueDate": "15/6/2023",
+        "done": false,
+        "id": "96af4296be65e7519dd9dd85ea65cf4660f8284073164ba269d2aa8e2f954408",
+        "createdOn": "14/6/2023, 4:40:07 p. m."
+    }
+]

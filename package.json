@@ -11,9 +11,9 @@
   "author": "Cluuny",
   "license": "ISC",
   "dependencies": {
+    "chalk": "^5.2.0",
     "colors": "^1.4.0",
     "inquirer": "^9.2.7",
-    "inquirer-date-prompt": "^3.0.0",
-    "prompts": "^2.4.2"
+    "inquirer-date-prompt": "^3.0.0"
   }
 }
